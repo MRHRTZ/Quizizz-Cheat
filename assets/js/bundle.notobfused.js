@@ -96,7 +96,7 @@ function appendQNA(data) {
                                 </div>
                             </div>
                             <div class="card-body">
-                                <img src="${questions.media.length > 0 ? questions.media[0].url : ''}" class="embed-responsive-item">
+                                ${questions.media.length > 0 ? questions.media[0].type == 'image' ? `<img src="${questions.media[0].url}" class="card-img-top embed-responsive-item">` :  questions.media[0].type == 'audio' ? `<audio controls><source src="${questions.media[0].url}" type="audio/mpeg"></audio>` : '' : ``}
                                 <p>${questions.question}</p>
                                 <div class="row d-flex p-2 bd-highlight">`
                                 for (let option of questions.options) {
