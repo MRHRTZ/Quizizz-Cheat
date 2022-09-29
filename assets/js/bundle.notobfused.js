@@ -67,7 +67,7 @@ function appendQNA(data) {
                         <div class="card-header">
                             <h3>${data.name}</h3>
                         </div>
-                        ${data.image ? `<div class="card-body"><img src="${data.image}"></div>` : ''}
+                        ${data.image ? `<div class="card-body"><img src="${data.image}" class="card-img-top embed-responsive-item"></div>` : ''}
                         <div class="card-footer text-muted card-img-top">
                             <div class="float-start">
                                 ${data.createdBy.firstName} ${data.createdBy.lastName}
@@ -96,19 +96,19 @@ function appendQNA(data) {
                                 </div>
                             </div>
                             <div class="card-body">
-                                <img src="${questions.media.length > 0 ? questions.media[0].url : ''}">
-                                ${questions.question}
+                                <img src="${questions.media.length > 0 ? questions.media[0].url : ''}" class="embed-responsive-item">
+                                <p>${questions.question}</p>
                                 <div class="row d-flex p-2 bd-highlight">`
                                 for (let option of questions.options) {
                                     if (option.isCorrect) {
                                         html += `
                                         <div class="mb-3 d-flex justify-content-center align-items-center rounded bg-success text-white" style="height: 100px;">
-                                            ${option.media.length > 0 ? `<img src="${option.media[0].url}" height="90px">` : option.text}
+                                            ${option.media.length > 0 ? `<img src="${option.media[0].url}" height="90px">` : `${option.text}`}
                                         </div>`
                                     } else {
                                         html += `
                                         <div class="mb-3 d-flex justify-content-center align-items-center rounded bg-danger text-white" style="height: 100px;">
-                                            ${option.media.length > 0 ? `<img src="${option.media[0].url}" height="90px">` : option.text}
+                                            ${option.media.length > 0 ? `<img src="${option.media[0].url}" height="90px">` : `${option.text}`}
                                         </div>`
                                     }
                                 }
@@ -158,7 +158,7 @@ function parseQuizizz() {
                     const option = questionItem.structure.options[i]
                     options.push({
                         type: option.type,
-                        text: option.text.replace(/\<p\>/g, ''),
+                        text: `${option.text}`.replace(/\<p\>/g, ''),
                         media: option.media,
                         isCorrect: questionItem.structure.answer.toString().includes(i) || questionItem.type == 'BLANK'
                     })
@@ -339,7 +339,7 @@ function appendLiveQNA(data) {
                             <input type="hidden" id="roomHash" value="${data.hash}">
                             <h3>${data.name}</h3>
                         </div>
-                        ${data.image ? `<div class="card-body"><img src="${data.image}"></div>` : ''}
+                        ${data.image ? `<div class="card-body"><img src="${data.image}" class="card-img-top embed-responsive-item"></div>` : ''}
                         <div class="card-footer text-muted card-img-top">
                             <div class="float-start">
                                 GRADE : ${data.grade}
@@ -373,15 +373,15 @@ function appendLiveQNA(data) {
                                 </div>
                             </div>
                             <div class="card-body">
-                                <img src="${questions.structure.query.media.length > 0 ? questions.structure.query.media[0].url : ''}">
-                                ${questions.structure.query.text}
+                                <img src="${questions.structure.query.media.length > 0 ? questions.structure.query.media[0].url : ''}" class="embed-responsive-item">
+                                <p>${questions.structure.query.text}</p>
                                 <div class="row d-flex p-2 bd-highlight">
                                 <center><img class="answer-load" src="assets/images/loading.gif"></center>`
                                 let counter = 0;
                                 for (let option of questions.structure.options ? questions.structure.options : []) {
                                     html += `
                                     <div id="${id}-${counter}" class="mb-3 d-flex justify-content-center align-items-center rounded bg-danger text-white" style="height: 100px; display: none !important;">
-                                        ${option.media.length > 0 ? `<img src="${option.media[0].url}" height="90px">` : option.text}
+                                        ${option.media.length > 0 ? `<img src="${option.media[0].url}" height="90px">` : `${option.text}`}
                                     </div>`
                                     counter += 1
                                 }
@@ -411,7 +411,7 @@ function appendLiveTestQNA(data) {
                         <div class="card-header">
                             <h3>${data.name}</h3>
                         </div>
-                        ${data.image ? `<div class="card-body"><img src="${data.image}"></div>` : ''}
+                        ${data.image ? `<div class="card-body"><img src="${data.image}" class="card-img-top embed-responsive-item"></div>` : ''}
                         <div class="card-footer text-muted card-img-top">
                             <div class="float-start">
                                 GRADE : ${data.grade}
@@ -441,13 +441,13 @@ function appendLiveTestQNA(data) {
                                 </div>
                             </div>
                             <div class="card-body">
-                                <img src="${questions.structure.query.media.length > 0 ? questions.structure.query.media[0].url : ''}">
-                                ${questions.structure.query.text}
+                                <img src="${questions.structure.query.media.length > 0 ? questions.structure.query.media[0].url : ''}" class="embed-responsive-item">
+                                <p>${questions.structure.query.text}</p>
                                 <div class="row d-flex p-2 bd-highlight">`
                                 for (let option of questions.structure.options ? questions.structure.options : []) {
                                     html += `
                                     <div id="${id}" class="mb-3 d-flex justify-content-center align-items-center rounded border border-primary" style="height: 100px;">
-                                        ${option.media.length > 0 ? `<img src="${option.media[0].url}" height="90px">` : option.text}
+                                        ${option.media.length > 0 ? `<img src="${option.media[0].url}" height="90px">` : `${option.text}`}
                                     </div>`
                                 }
                             html += `</div>
