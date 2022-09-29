@@ -1,0 +1,10 @@
+body {
+    font-family: monospace;
+}
+
+#obfuscate-text {
+    font-family: monospace;
+    font-size: 20px;
+    white-space: nowrap;
+    text-shadow: 0 2px 2px rgba(#000, 0.9);
+}
