@@ -136,7 +136,7 @@ function parseQuizizz() {
             'info'
         )
         let id = pinurl.match(/[a-z0-9]{24}/g)[0]
-        let apiUrl = `https://quizizz.com/_api/main/quiz/${id}?bypassProfanity=true&returnPrivileges=true&source=join`
+        let apiUrl = `/getMetadata?id=${id}`
         let data = {
             updatedAt: '',
             grade: '',
@@ -259,7 +259,7 @@ function processLiveFromHash(hash) {
                 // console.log(result)
                 if (result[1].room.type == 'test') {
                     let data = result[1].room
-                    $.getJSON(`https://quizizz.com/_api/main/game/${data.hash}/quiz-info`, (json) => {
+                    $.getJSON(`/getInfo?hash=${data.hash}`, (json) => {
                         data.grade = json.data.grade == json.data.grade ? json.data.grade[0] : json.data.grade[0] + '-' + json.data.grade[1]
                         data.image = json.data.image
                         data.subjects = json.data.subjects
@@ -465,7 +465,7 @@ function appendLiveTestQNA(data) {
 
 function parseLiveQuizizz(data, getAnswer=false) {
     console.log({ parseLive: data })
-    $.getJSON(`https://quizizz.com/_api/main/game/${data.hash}/quiz-info`, (json) => {
+    $.getJSON(`/getInfo?hash=${data.hash}`, (json) => {
         data.grade = json.data.grade == json.data.grade ? json.data.grade[0] : json.data.grade[0] + '-' + json.data.grade[1]
         data.image = json.data.image
         data.subjects = json.data.subjects
