@@ -518,53 +518,16 @@ function getLiveAnswer(data) {
         }
     }
     let postData = {
-        roomHash: data.hash,
-        playerId: data.playerId.toString(),
-        response: {
-            attempt: 0,
-            questionId: data.questionId,
-            questionType: data.questionType,
-            response,
-            responseType: "original",
-            timeTaken: randomIntFromInterval(0, data.time),
-            isEvaluated: false,
-            state: "attempted",
-            provisional: {
-                scores: {
-                    correct: 0,
-                    incorrect: 0
-                },
-                scoreBreakups: {
-                    correct: {
-                        base: 0,
-                        timer: 0,
-                        streak: 0,
-                        total: 0,
-                        powerups: []
-                    },
-                    incorrect: {
-                        base: 0,
-                        timer: 0,
-                        streak: 0,
-                        total: 0,
-                        powerups: []
-                    }
-                },
-                teamAdjustments: {
-                    correct: 0,
-                    incorrect: 0
-                }
-            }
-        }
+        hash: data.hash,
+        player_id: data.playerId.toString(),
+        question_id: data.questionId,
+        question_type: data.questionType,
+        time: randomIntFromInterval(0, data.time)
     }
 
     $.ajax({
-        type: "POST",
-        url: "/getAnswer",
-        // The key needs to match your method's input parameter (case-sensitive).
-        data: JSON.stringify(postData),
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
+        type: "GET",
+        url: `/getAnswer?${$.param(postData)}`,
         success: function(res_data){
             let answer = res_data.question.structure.answer
             console.log({ data, answer })
