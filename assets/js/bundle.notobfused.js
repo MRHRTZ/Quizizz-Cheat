@@ -58,7 +58,7 @@ function msToTime(s) {
 function filterHandle() {
     $("#search-input").on("keyup", function() {
         var value = $(this).val().toLowerCase();
-        $("#qna #answers").filter(function() {
+        $("#qna .answer").filter(function() {
         $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
         });
     });
@@ -109,7 +109,7 @@ function appendQNA(data) {
     $('#qna').append(htmlHeader)
     for (let questions of data.questions) {
         let html = `
-        <div id="answers">
+        <div class="answer" id="answers">
             <div class="container-fluid bg-dark py-3">
                 <div class="row">
                     <div class="col-md-6 mx-auto">
@@ -401,7 +401,7 @@ function appendLiveQNA(data) {
     for (let id of data.questionIds) {
         let questions = data.questions[id]
         let html = `
-        <div id="${id}">
+        <div class="answer" id="${id}">
             <div class="container-fluid bg-dark py-3">
                 <div class="row">
                     <div class="col-md-6 mx-auto">
@@ -492,7 +492,7 @@ function appendLiveTestQNA(data) {
     for (let id of data.questionIds) {
         let questions = data.questions[id]
         let html = `
-        <div id="${id}">
+        <div class="answer" id="${id}">
             <div class="container-fluid bg-dark py-3">
                 <div class="row">
                     <div class="col-md-6 mx-auto">
