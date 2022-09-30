@@ -55,6 +55,15 @@ function msToTime(s) {
     return pad(hrs) + ':' + pad(mins) + ':' + pad(secs);
 }
 
+function filterHandle() {
+    $("#search-input").on("keyup", function() {
+        var value = $(this).val().toLowerCase();
+        $("#qna #answers").filter(function() {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+}
+
 function appendQNA(data) {
     $('#qna').html('')
     let htmlHeader = `
@@ -64,16 +73,34 @@ function appendQNA(data) {
                 <div class="row">
                     <div class="col-md-6 mx-auto">
                         <div class="card text-center">
-                        <div class="card-header">
-                            <h3>${data.name}</h3>
-                        </div>
-                        ${data.image ? `<div class="card-body"><img src="${data.image}" class="card-img-top embed-responsive-item"></div>` : ''}
-                        <div class="card-footer text-muted card-img-top">
-                            <div class="float-start">
-                                ${data.createdBy.firstName} ${data.createdBy.lastName}
+                            <div class="card-header">
+                                <h3>${data.name}</h3>
                             </div>
-                            <div class="float-end">
-                                ${data.subjects.join(', ')} ${data.grade}
+                            ${data.image ? `<div class="card-body"><img src="${data.image}" class="card-img-top embed-responsive-item"></div>` : ''}
+                            <div class="card-footer text-muted card-img-top">
+                                <div class="float-start">
+                                    ${data.createdBy.firstName} ${data.createdBy.lastName}
+                                </div>
+                                <div class="float-end">
+                                    ${data.subjects.join(', ')} ${data.grade}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="search-content">
+            <div class="container-fluid bg-dark py-3">
+                <div class="row">
+                    <div class="col-md-6 mx-auto">
+                        <div class="card text-center">
+                            <div class="input-group">
+                                <span class="input-group-text" id="basic-addon1">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                </span>
+                                <input id="search-input" type="text" class="form-control" placeholder="Filter Question or Answer" aria-label="Pin" value="" aria-describedby="basic-addon1" style="font-family: monospace;">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -103,12 +130,12 @@ function appendQNA(data) {
                                     if (option.isCorrect) {
                                         html += `
                                         <div class="mb-3 d-flex justify-content-center align-items-center rounded bg-success text-white" style="height: 100px;">
-                                            ${option.media.length > 0 ? `<img src="${option.media[0].url}" height="90px">` : `${option.text}`}
+                                            ${option.media.length > 0 ? `<img src="${option.media[0].url}" height="90px">` : `<span>${option.text}</span>`}
                                         </div>`
                                     } else {
                                         html += `
                                         <div class="mb-3 d-flex justify-content-center align-items-center rounded bg-danger text-white" style="height: 100px;">
-                                            ${option.media.length > 0 ? `<img src="${option.media[0].url}" height="90px">` : `${option.text}`}
+                                            ${option.media.length > 0 ? `<img src="${option.media[0].url}" height="90px">` : `<span>${option.text}</span>`}
                                         </div>`
                                     }
                                 }
@@ -124,6 +151,7 @@ function appendQNA(data) {
         </div>
         ` 
         $('#qna').append(html)
+        filterHandle()
     }
 }
 
@@ -335,17 +363,35 @@ function appendLiveQNA(data) {
                 <div class="row">
                     <div class="col-md-6 mx-auto">
                         <div class="card text-center">
-                        <div class="card-header">
-                            <input type="hidden" id="roomHash" value="${data.hash}">
-                            <h3>${data.name}</h3>
-                        </div>
-                        ${data.image ? `<div class="card-body"><img src="${data.image}" class="card-img-top embed-responsive-item"></div>` : ''}
-                        <div class="card-footer text-muted card-img-top">
-                            <div class="float-start">
-                                GRADE : ${data.grade}
+                            <div class="card-header">
+                                <input type="hidden" id="roomHash" value="${data.hash}">
+                                <h3>${data.name}</h3>
                             </div>
-                            <div class="float-end">
-                                ${data.subjects.join(', ')}
+                            ${data.image ? `<div class="card-body"><img src="${data.image}" class="card-img-top embed-responsive-item"></div>` : ''}
+                            <div class="card-footer text-muted card-img-top">
+                                <div class="float-start">
+                                    GRADE : ${data.grade}
+                                </div>
+                                <div class="float-end">
+                                    ${data.subjects.join(', ')}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="search-content">
+            <div class="container-fluid bg-dark py-3">
+                <div class="row">
+                    <div class="col-md-6 mx-auto">
+                        <div class="card text-center">
+                            <div class="input-group">
+                                <span class="input-group-text" id="basic-addon1">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                </span>
+                                <input id="search-input" type="text" class="form-control" placeholder="Filter Question or Answer" aria-label="Pin" value="" aria-describedby="basic-addon1" style="font-family: monospace;">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -381,7 +427,7 @@ function appendLiveQNA(data) {
                                 for (let option of questions.structure.options ? questions.structure.options : []) {
                                     html += `
                                     <div id="${id}-${counter}" class="mb-3 d-flex justify-content-center align-items-center rounded bg-danger text-white" style="height: 100px; display: none !important;">
-                                        ${option.media.length > 0 ? `<img src="${option.media[0].url}" height="90px">` : `${option.text}`}
+                                        ${option.media.length > 0 ? `<img src="${option.media[0].url}" height="90px">` : `<span>${option.text}</span>`}
                                     </div>`
                                     counter += 1
                                 }
@@ -395,6 +441,7 @@ function appendLiveQNA(data) {
         </div>
         ` 
         $('#qna').append(html)
+        filterHandle()
     }
 }
 
@@ -408,16 +455,34 @@ function appendLiveTestQNA(data) {
                 <div class="row">
                     <div class="col-md-6 mx-auto">
                         <div class="card text-center">
-                        <div class="card-header">
-                            <h3>${data.name}</h3>
-                        </div>
-                        ${data.image ? `<div class="card-body"><img src="${data.image}" class="card-img-top embed-responsive-item"></div>` : ''}
-                        <div class="card-footer text-muted card-img-top">
-                            <div class="float-start">
-                                GRADE : ${data.grade}
+                            <div class="card-header">
+                                <h3>${data.name}</h3>
                             </div>
-                            <div class="float-end">
-                                ${data.subjects.join(', ')}
+                            ${data.image ? `<div class="card-body"><img src="${data.image}" class="card-img-top embed-responsive-item"></div>` : ''}
+                            <div class="card-footer text-muted card-img-top">
+                                <div class="float-start">
+                                    GRADE : ${data.grade}
+                                </div>
+                                <div class="float-end">
+                                    ${data.subjects.join(', ')}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="search-content">
+            <div class="container-fluid bg-dark py-3">
+                <div class="row">
+                    <div class="col-md-6 mx-auto">
+                        <div class="card text-center">
+                            <div class="input-group">
+                                <span class="input-group-text" id="basic-addon1">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                </span>
+                                <input id="search-input" type="text" class="form-control" placeholder="Filter Question or Answer" aria-label="Pin" value="" aria-describedby="basic-addon1" style="font-family: monospace;">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -447,7 +512,7 @@ function appendLiveTestQNA(data) {
                                 for (let option of questions.structure.options ? questions.structure.options : []) {
                                     html += `
                                     <div id="${id}" class="mb-3 d-flex justify-content-center align-items-center rounded border border-primary" style="height: 100px;">
-                                        ${option.media.length > 0 ? `<img src="${option.media[0].url}" height="90px">` : `${option.text}`}
+                                        ${option.media.length > 0 ? `<img src="${option.media[0].url}" height="90px">` : `<span>${option.text}</span>`}
                                     </div>`
                                 }
                             html += `</div>
@@ -460,6 +525,7 @@ function appendLiveTestQNA(data) {
         </div>
         ` 
         $('#qna').append(html)
+        filterHandle()
     }
 }
 
@@ -548,7 +614,7 @@ function getLiveAnswer(data) {
                     for (let answer of res_data.question.structure.options) {
                         $(`#${data.questionId} .row.d-flex.p-2.bd-highlight`).append(`
                             <div id="answer-${data.questionId}" class="mb-3 d-flex justify-content-center align-items-center rounded bg-success text-white" style="height: 100px;">
-                                ${answer.media.length > 0 ? `<img src="${answer.media[0].url}" height="90px">` : answer.text}
+                                ${answer.media.length > 0 ? `<img src="${answer.media[0].url}" height="90px">` : `<span>${answer.text}</span>`}
                             </div>
                         `)
                     }
@@ -558,7 +624,7 @@ function getLiveAnswer(data) {
                 $('.row.d-flex.p-2.bd-highlight > .rounded').show()
                 $(`#${data.questionId} .row.d-flex.p-2.bd-highlight`).append(`
                     <div id="answer-${id}" class="mb-3 d-flex justify-content-center align-items-center rounded bg-success text-white" style="height: 100px;">
-                        ${answer.options.media.length > 0 ? `<img src="${answer.options.media[0].url}" height="90px">` : answer.options.text}
+                        ${answer.options.media.length > 0 ? `<img src="${answer.options.media[0].url}" height="90px">` : `<span>${answer.options.text}</span>`}
                     </div>
                 `)
             }
