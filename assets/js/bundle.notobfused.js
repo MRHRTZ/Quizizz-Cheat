@@ -539,9 +539,19 @@ function getLiveAnswer(data) {
             } else if (typeof answer === "object" && Array.isArray(answer)) {
                 $('.answer-load').remove()
                 $('.row.d-flex.p-2.bd-highlight > .rounded').show()
-                for (let index of answer) {
-                    $(`#${data.questionId}-${index}`).removeClass('bg-danger')
-                    $(`#${data.questionId}-${index}`).addClass('bg-success')
+                if (!res_data.question.structure.options) {
+                    for (let index of answer) {
+                        $(`#${data.questionId}-${index}`).removeClass('bg-danger')
+                        $(`#${data.questionId}-${index}`).addClass('bg-success')
+                    }
+                } else {
+                    for (let answer of res_data.question.structure.options) {
+                        $(`#${data.questionId} .row.d-flex.p-2.bd-highlight`).append(`
+                            <div id="answer-${data.questionId}" class="mb-3 d-flex justify-content-center align-items-center rounded bg-success text-white" style="height: 100px;">
+                                ${answer.media.length > 0 ? `<img src="${answer.media[0].url}" height="90px">` : answer.text}
+                            </div>
+                        `)
+                    }
                 }
             } else if (typeof answer === "object" && answer.options) {
                 $('.answer-load').remove()
