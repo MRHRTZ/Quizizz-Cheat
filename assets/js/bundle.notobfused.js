@@ -165,7 +165,9 @@ function parseQuizizz() {
         )
         let id = pinurl.match(/[a-z0-9]{24}/g)[0]
         let apiUrl = `/getMetadata?id=${id}`
-        let data = {}
+        let data = {
+            questions: []
+        }
         $.getJSON(apiUrl, (json) => {
             if (json.error) {
                 Toast.fire(
@@ -173,6 +175,7 @@ function parseQuizizz() {
                     json.message,
                     'warning'
                 )
+                return
             }
             let questionsInfo = json.data.quiz.info
             data.updatedAt = questionsInfo.updated
