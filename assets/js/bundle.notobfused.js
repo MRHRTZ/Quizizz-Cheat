@@ -1,5 +1,7 @@
 document.persistentToast = null
 
+$('#year').text(new Date().getFullYear())
+
 const PersistentToast = Swal.mixin({
     toast: true,
     position: 'top-end',
@@ -157,7 +159,7 @@ function appendQNA(data) {
 
 function parseQuizizz() {
     let pinurl = $('#_data').val()
-    if (pinurl.includes('quizizz.com')) {
+    if (pinurl.includes('quizizz.com') && !pinurl.includes('join?gc')) {
         document.persistentToast = PersistentToast.fire(
             'Processing...',
             'Crawling URL Request.',
@@ -220,6 +222,30 @@ function parseQuizizz() {
                 'warning'
             )
         })
+    } else if (pinurl.includes('join?gc')) {
+        document.persistentToast = PersistentToast.fire(
+            'Processing...',
+            'Crawling PIN Request.',
+            'info'
+        )
+        let pin = pinurl.match(/[0-9]/g).join('')
+        $.getJSON('/checkRoom?pin=' + pin, (json) => {
+            console.log(json)
+            if (json.room) {
+                document.persistentToast = PersistentToast.fire(
+                    'Socketing...',
+                    `Connecting to socket`,
+                    'info'
+                )
+                processLiveFromHash(json.room.hash)
+            } else {
+                Toast.fire(
+                    'Code Error!',
+                    json.error.message,
+                    'warning'
+                )
+            }
+        })
     } else if (/^\d+$/.test(pinurl)) {
         document.persistentToast = PersistentToast.fire(
             'Processing...',
@@ -230,9 +256,9 @@ function parseQuizizz() {
             console.log(json)
             if (json.room) {
                 document.persistentToast = PersistentToast.fire(
-                    'Success',
-                    `Starting connect to socket ..`,
-                    'success'
+                    'Socketing ...',
+                    `Connecting to socket`,
+                    'info'
                 )
                 processLiveFromHash(json.room.hash)
             } else {
@@ -287,8 +313,8 @@ function processLiveFromHash(hash) {
             socket.send("3") // Pong
         } else if (/^42/.test(body)) {
             const result = JSON.parse(body.match(/\[.*?\]$/g)[0] ?? { "success":false })
+            console.log(result)
             if (result[0].includes('join') && result[1].room) {
-                // console.log(result)
                 if (result[1].room.type == 'test') {
                     let data = result[1].room
                     $.getJSON(`/getInfo?hash=${data.hash}`, (json) => {
@@ -318,6 +344,12 @@ function processLiveFromHash(hash) {
                         parseLiveQuizizz(roomData, true)
                     }
                 }
+            } else if (result[0].includes('handshakeData')) {
+                Toast.fire(
+                    'Status Changed',
+                    'Received Handshake!',
+                    'info'
+                )
             } else if (result[0].includes('gameStarted')) {
                 Toast.fire(
                     'Status Changed',
@@ -338,7 +370,7 @@ function processLiveFromHash(hash) {
                     'info'
                 )
                 socket.close(1000)
-            } else if (!result[1].room) {
+            } else if (!result[0].includes('handshakeData') && !result[1].room) {
                 Swal.fire(
                     'Cannot access live!',
                     'Make sure you have logged out from quizizz website!',
@@ -423,7 +455,7 @@ function appendLiveQNA(data) {
                                 </div>
                             </div>
                             <div class="card-body">
-                                <img src="${questions.structure.query.media.length > 0 ? questions.structure.query.media[0].url : ''}" class="embed-responsive-item">
+                                <img ${questions.structure.query.media.length > 0 ? `src="${questions.structure.query.media[0].url}"` : 'style="display: none;"'} class="img-question">
                                 <p>${questions.structure.query.text}</p>
                                 <div class="row d-flex p-2 bd-highlight">
                                 <center><img class="answer-load" src="assets/images/loading.gif"></center>`
@@ -543,11 +575,8 @@ function parseLiveQuizizz(data, getAnswer=false) {
         appendLiveQNA(data)
     })
     if (getAnswer) {    
-        document.persistentToast = PersistentToast.fire(
-            `Quizziz Live - ${data.name}`,
-            'getting all the answers...',
-            'info'
-        )
+        window.scrape_count = 1
+        let length_question = data.questionIds.length
         for (let id of data.questionIds) {
             let questions = data.questions[id]
             let answerData =  {
@@ -557,18 +586,18 @@ function parseLiveQuizizz(data, getAnswer=false) {
                 time: questions.time,
                 playerId: data.playerId
             }
-            getLiveAnswer(answerData)
+            getLiveAnswer(answerData, length_question)            
         }
         Toast.fire(
-            'Success',
-            `Success Scraping Answers!`,
-            'success'
+            'Process',
+            `Scraping Answers ..`,
+            'info'
         )
     }
     // document.persistentToast.close()
 }
 
-function getLiveAnswer(data) {
+function getLiveAnswer(data, length_question) {
     let response = null
     if (data.questionType == 'MCQ') {
         response = 0
@@ -631,6 +660,19 @@ function getLiveAnswer(data) {
                         ${answer.options.media.length > 0 ? `<img src="${answer.options.media[0].url}" height="90px">` : `<span>${answer.options.text}</span>`}
                     </div>
                 `)
+            }
+            Toast.fire(
+                'Quizziz Live',
+                `Getting answers (${window.scrape_count}/${length_question})`,
+                'info'
+            )
+            window.scrape_count += 1
+            if (window.scrape_count === length_question) {
+                Toast.fire(
+                    'Quizziz Live',
+                    `Success scraping all answers!`,
+                    'success'
+                )
             }
         },
         error: function(errMsg) {
